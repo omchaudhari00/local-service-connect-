@@ -31,8 +31,8 @@ Visit: http://127.0.0.1:8000/
 
 | Role   | Username | Password |
 |--------|----------|----------|
-| User   | rohan    | pass123  |
-| Worker | vikram   | pass123  |
+| User   | om       | om123    |
+| Worker | meet     | meet123  |
 | Admin  | admin    | admin123 |
 
 > Admin panel is at `/admin-panel/` (login as `admin`)
