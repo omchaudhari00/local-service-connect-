@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}My Dashboard — LocalService Connect{% endblock %}
+{% block content %}
+
+<div class="page-title">My Dashboard</div>
+
+<div class="card">
+  <div class="card-title">New service request</div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group">
+        <label>Service type</label>
+        <select name="service_type">
+          {% for val, label in form.fields.service_type.choices %}
+            <option value="{{ val }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Location (city / area)</label>
+        <input type="text" name="location" placeholder="e.g. Navrangpura, Ahmedabad" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description" placeholder="Describe the issue clearly..." required></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">Submit request</button>
+  </form>
+</div>
+
+<div class="section-heading">My requests</div>
+
+<div class="filter-row">
+  <a href="?" class="filter-btn {% if not status_filter %}active{% endif %}">All</a>
+  <a href="?status=Pending" class="filter-btn {% if status_filter == 'Pending' %}active{% endif %}">Pending</a>
+  <a href="?status=Accepted" class="filter-btn {% if status_filter == 'Accepted' %}active{% endif %}">Accepted</a>
+  <a href="?status=Completed" class="filter-btn {% if status_filter == 'Completed' %}active{% endif %}">Completed</a>
+  <a href="?status=Rejected" class="filter-btn {% if status_filter == 'Rejected' %}active{% endif %}">Rejected</a>
+</div>
+
+{% for req in requests %}
+  <div class="request-item">
+    <div class="req-header">
+      <div class="req-title">{{ req.service_type }}</div>
+      <span class="status status-{{ req.status|lower }}">{{ req.status }}</span>
+    </div>
+    <div class="req-meta">
+      {{ req.location }} &middot; {{ req.created_at|timesince }} ago
+      {% if req.worker %} &middot; Assigned to <strong>{{ req.worker.get_full_name|default:req.worker.username }}</strong>{% endif %}
+    </div>
+    <div class="req-desc">{{ req.description }}</div>
+  </div>
+{% empty %}
+  <div class="empty">No requests found. Submit one above to get started.</div>
+{% endfor %}
+
+{% endblock %}

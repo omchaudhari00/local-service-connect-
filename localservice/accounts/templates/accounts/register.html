@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Register — LocalService Connect{% endblock %}
+{% block content %}
+<div class="auth-card" style="max-width:500px;">
+  <div class="auth-title">Create account</div>
+  <div class="auth-sub">Join as a user or service worker</div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group">
+        <label>First name</label>
+        <input type="text" name="first_name" placeholder="First name">
+      </div>
+      <div class="form-group">
+        <label>Last name</label>
+        <input type="text" name="last_name" placeholder="Last name">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" name="username" required placeholder="Choose a username">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="Email address">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" required placeholder="Password">
+      </div>
+      <div class="form-group">
+        <label>Confirm password</label>
+        <input type="password" name="confirm_password" required placeholder="Confirm">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Phone (optional)</label>
+      <input type="text" name="phone" placeholder="e.g. 9876543210">
+    </div>
+    <div class="form-group">
+      <label>City / Area</label>
+      <input type="text" name="city" placeholder="e.g. Ahmedabad">
+    </div>
+    <div class="form-group">
+      <label>I am registering as</label>
+      <div class="radio-group">
+        <label><input type="radio" name="role" value="user" checked> User (I need services)</label>
+        <label><input type="radio" name="role" value="worker"> Worker (I provide services)</label>
+      </div>
+    </div>
+    <div class="form-group" id="skill-group" style="display:none;">
+      <label>My skill / service type</label>
+      <select name="skill">
+        <option value="">-- Select --</option>
+        <option>Plumbing</option>
+        <option>Electrical</option>
+        <option>Hardware Repair</option>
+        <option>Carpentry</option>
+        <option>Painting</option>
+        <option>Other</option>
+      </select>
+    </div>
+    {% if form.errors %}
+      <p style="color:#A32D2D;font-size:13px;margin-bottom:12px;">
+        {% for field in form %}{% for error in field.errors %}{{ error }}<br>{% endfor %}{% endfor %}
+        {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+      </p>
+    {% endif %}
+    <button class="btn btn-primary" style="width:100%;margin-top:4px;" type="submit">Create account</button>
+  </form>
+  <div class="auth-footer">Already have an account? <a href="{% url 'login' %}">Log in</a></div>
+</div>
+<script>
+  document.querySelectorAll('input[name="role"]').forEach(r => {
+    r.addEventListener('change', function() {
+      document.getElementById('skill-group').style.display = this.value === 'worker' ? 'block' : 'none';
+    });
+  });
+</script>
+{% endblock %}

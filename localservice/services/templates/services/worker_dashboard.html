@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Worker Dashboard — LocalService Connect{% endblock %}
+{% block content %}
+
+<div class="page-title">Worker Dashboard</div>
+{% if profile.skill %}<p style="font-size:13px;color:#888;margin-top:-14px;margin-bottom:18px;">Skill: {{ profile.skill }}</p>{% endif %}
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-num">{{ pending.count }}</div>
+    <div class="stat-label">Available requests</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ my_jobs.count }}</div>
+    <div class="stat-label">My active jobs</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ completed.count }}</div>
+    <div class="stat-label">Completed</div>
+  </div>
+</div>
+
+{% if my_jobs %}
+  <div class="section-heading">My active jobs</div>
+  {% for req in my_jobs %}
+    <div class="request-item" style="border-left: 3px solid #185FA5;">
+      <div class="req-header">
+        <div class="req-title">{{ req.service_type }}</div>
+        <span class="status status-accepted">Accepted</span>
+      </div>
+      <div class="req-meta">{{ req.location }} &middot; by {{ req.user.get_full_name|default:req.user.username }} &middot; {{ req.created_at|timesince }} ago</div>
+      <div class="req-desc">{{ req.description }}</div>
+      <div class="req-actions">
+        <a href="{% url 'complete_request' req.pk %}" class="btn btn-success btn-sm">Mark completed</a>
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="section-heading" style="margin-top:{% if my_jobs %}20px{% else %}4px{% endif %};">Available requests</div>
+
+{% for req in pending %}
+  <div class="request-item">
+    <div class="req-header">
+      <div class="req-title">{{ req.service_type }}</div>
+      <span class="status status-pending">Pending</span>
+    </div>
+    <div class="req-meta">{{ req.location }} &middot; by {{ req.user.get_full_name|default:req.user.username }} &middot; {{ req.created_at|timesince }} ago</div>
+    <div class="req-desc">{{ req.description }}</div>
+    <div class="req-actions">
+      <a href="{% url 'accept_request' req.pk %}" class="btn btn-primary btn-sm">Accept</a>
+      <a href="{% url 'reject_request' req.pk %}" class="btn btn-danger btn-sm">Reject</a>
+    </div>
+  </div>
+{% empty %}
+  <div class="empty">No pending requests at the moment.</div>
+{% endfor %}
+
+{% if completed %}
+  <div class="section-heading" style="margin-top:20px;">Completed jobs</div>
+  {% for req in completed %}
+    <div class="request-item" style="opacity:0.75;">
+      <div class="req-header">
+        <div class="req-title">{{ req.service_type }}</div>
+        <span class="status status-completed">Completed</span>
+      </div>
+      <div class="req-meta">{{ req.location }} &middot; {{ req.updated_at|timesince }} ago</div>
+      <div class="req-desc">{{ req.description }}</div>
+    </div>
+  {% endfor %}
+{% endif %}
+
+{% endblock %}

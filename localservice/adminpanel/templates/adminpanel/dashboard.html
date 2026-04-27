@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Admin Panel — LocalService Connect{% endblock %}
+{% block content %}
+
+<div class="page-title">Admin Panel</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-num">{{ stats.total }}</div><div class="stat-label">Total requests</div></div>
+  <div class="stat-card"><div class="stat-num">{{ stats.pending }}</div><div class="stat-label">Pending</div></div>
+  <div class="stat-card"><div class="stat-num">{{ stats.accepted }}</div><div class="stat-label">Active jobs</div></div>
+  <div class="stat-card"><div class="stat-num">{{ stats.completed }}</div><div class="stat-label">Completed</div></div>
+  <div class="stat-card"><div class="stat-num">{{ stats.users }}</div><div class="stat-label">Users</div></div>
+  <div class="stat-card"><div class="stat-num">{{ stats.workers }}</div><div class="stat-label">Workers</div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+  <div class="card">
+    <div class="card-title">Registered users</div>
+    {% for p in users %}
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0ea;font-size:14px;">
+        <span>{{ p.user.get_full_name|default:p.user.username }}</span>
+        <span style="color:#888;font-size:12px;">{{ p.city }}</span>
+      </div>
+    {% empty %}<p style="color:#aaa;font-size:13px;">No users yet.</p>{% endfor %}
+  </div>
+  <div class="card">
+    <div class="card-title">Registered workers</div>
+    {% for p in workers %}
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0ea;font-size:14px;">
+        <span>{{ p.user.get_full_name|default:p.user.username }}</span>
+        <span style="color:#888;font-size:12px;">{{ p.skill }}</span>
+      </div>
+    {% empty %}<p style="color:#aaa;font-size:13px;">No workers yet.</p>{% endfor %}
+  </div>
+</div>
+
+<div class="section-heading">All service requests</div>
+
+{% for req in all_requests %}
+  <div class="request-item">
+    <div class="req-header">
+      <div class="req-title">{{ req.service_type }} <span style="font-weight:400;color:#888;font-size:13px;">— {{ req.user.get_full_name|default:req.user.username }}</span></div>
+      <span class="status status-{{ req.status|lower }}">{{ req.status }}</span>
+    </div>
+    <div class="req-meta">
+      {{ req.location }} &middot; {{ req.created_at|timesince }} ago
+      {% if req.worker %} &middot; Worker: <strong>{{ req.worker.get_full_name|default:req.worker.username }}</strong>{% else %} &middot; Unassigned{% endif %}
+    </div>
+    <div class="req-desc">{{ req.description }}</div>
+    <div class="req-actions">
+      <a href="{% url 'delete_request' req.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Delete this request?')">Delete</a>
+    </div>
+  </div>
+{% empty %}
+  <div class="empty">No requests in the system yet.</div>
+{% endfor %}
+
+{% endblock %}
